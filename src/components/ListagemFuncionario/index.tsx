@@ -7,6 +7,7 @@ import Button from "@mui/material/Button";
 import CircularProgress from '@mui/material/CircularProgress';
 import { useEffect } from 'react';
 import { Link } from "react-router-dom";
+import Swal from 'sweetalert2';
 import { useAppDispatch, useAppSelector } from "../../hooks/useTypeSelector";
 import { deleteFuncionarios, getFuncionarios } from '../../redux/funcionariosSlice';
 
@@ -17,7 +18,35 @@ export function ListagemFuncionario() {
     const { loading, data } = useAppSelector((state) => state);
 
     const deleteFuncionario = (idFuncionario: number) => {
-        dispatch(deleteFuncionarios(idFuncionario));
+        const swalWithBootstrapButtons = Swal.mixin({
+            customClass: {
+                confirmButton: 'btn btn-success',
+                cancelButton: 'btn btn-danger'
+            },
+            buttonsStyling: true
+        })
+
+        swalWithBootstrapButtons.fire({
+            title: 'Tem certeza que deseja deletar o funcionário?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Sim',
+            cancelButtonText: 'Não',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                dispatch(deleteFuncionarios(idFuncionario));
+                swalWithBootstrapButtons.fire(
+                    'Deletado!',
+                    'Usuário deletado',
+                    'success'
+                )
+            } else {
+                return
+            }
+        }).finally(() => {
+            dispatch(getFuncionarios());
+        })
     }
 
     useEffect(() => {
@@ -26,7 +55,6 @@ export function ListagemFuncionario() {
 
     return (
         <Container maxWidth="lg" sx={{ justifyContent: 'center', display: "flex", padding: '15px' }}>
-
 
             <Box sx={{ border: 1, borderRadius: '16px', borderColor: 'rgb(223 219 219)', padding: '45px', width: '100%' }} m={6}>
 
@@ -89,7 +117,6 @@ export function ListagemFuncionario() {
                                         </TableRow>
                                     ))
                                 }
-
                             </TableBody>
                         </Table>
                     )}

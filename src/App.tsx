@@ -8,7 +8,6 @@ function App() {
         <Routes>
           <Route path="/" element={<ListagemFuncionario />} />
           <Route path="/from" element={<FormFuncionario />} />
-
         </Routes>
       </Router>
     </div>
