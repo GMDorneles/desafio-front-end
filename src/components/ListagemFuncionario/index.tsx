@@ -4,10 +4,29 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { Box, Container, Table, TableBody, TableCell, TableHead, TableRow, TextField, Typography } from "@mui/material";
 import Button from "@mui/material/Button";
+import CircularProgress from '@mui/material/CircularProgress';
+import { useEffect } from 'react';
 import { Link } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "../../hooks/useTypeSelector";
+import { deleteFuncionarios, getFuncionarios } from '../../redux/funcionariosSlice';
+
 export function ListagemFuncionario() {
+
+    const dispatch = useAppDispatch();
+
+    const { loading, data } = useAppSelector((state) => state);
+
+    const deleteFuncionario = (idFuncionario: number) => {
+        dispatch(deleteFuncionarios(idFuncionario));
+    }
+
+    useEffect(() => {
+        dispatch(getFuncionarios());
+    }, [dispatch]);
+
     return (
         <Container maxWidth="lg" sx={{ justifyContent: 'center', display: "flex", padding: '15px' }}>
+
 
             <Box sx={{ border: 1, borderRadius: '16px', borderColor: 'rgb(223 219 219)', padding: '45px', width: '100%' }} m={6}>
 
@@ -29,38 +48,52 @@ export function ListagemFuncionario() {
                 </Box>
 
                 <Box mt={3}>
-                    <Table>
-                        <TableHead>
-                            <TableRow>
-                                <TableCell sx={{ fontWeight: 'bold', fontSize: 14, color: 'gray', }} align="left" >
-                                    Nome
-                                </TableCell>
-                                <TableCell sx={{ fontWeight: 'bold', fontSize: 14, color: 'gray', }} align="left" >
-                                    Função
-                                </TableCell>
-                                <TableCell>
-                                </TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            <TableRow key=''>
-                                <TableCell sx={{ fontSize: 16 }} align="left">
-                                    Gabrielly
-                                </TableCell>
-                                <TableCell sx={{ fontSize: 16 }} align="left">
-                                    Front-End
-                                </TableCell>
-                                <TableCell align={'right'}>
-                                    <Button >
-                                        <EditIcon sx={{ color: 'black', fontSize: 20 }} />
-                                    </Button>
-                                    <Button >
-                                        <DeleteIcon sx={{ color: 'black', fontSize: 20 }} />
-                                    </Button>
-                                </TableCell>
-                            </TableRow>
-                        </TableBody>
-                    </Table>
+                    {loading ? (
+                        <CircularProgress />
+                    ) : (
+                        <Table>
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell sx={{ fontWeight: 'bold', fontSize: 14, color: 'gray', }} align="left" >
+                                        Nome
+                                    </TableCell>
+                                    <TableCell sx={{ fontWeight: 'bold', fontSize: 14, color: 'gray', }} align="left" >
+                                        Função
+                                    </TableCell>
+                                    <TableCell>
+                                    </TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {
+                                    data.map((funcionario, i) => (
+                                        <TableRow key={i}>
+                                            <TableCell sx={{ fontSize: 16 }} align="left">
+                                                {funcionario.nome}
+                                            </TableCell>
+                                            <TableCell sx={{ fontSize: 16 }} align="left">
+                                                {funcionario.funcao}
+                                            </TableCell>
+                                            <TableCell align={'right'}>
+                                                <Link to="from" state={{
+                                                    data: funcionario
+                                                }} >
+                                                    <Button >
+                                                        <EditIcon sx={{ color: 'black', fontSize: 20 }} />
+                                                    </Button>
+                                                </Link>
+                                                <Button onClick={() => deleteFuncionario(funcionario.idfuncionarios)}>
+                                                    <DeleteIcon sx={{ color: 'black', fontSize: 20 }} />
+                                                </Button>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))
+                                }
+
+                            </TableBody>
+                        </Table>
+                    )}
+
                 </Box>
                 <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignContent: 'center' }} mt={1}>
                     <Typography sx={{ fontWeight: 'normal', fontSize: 14, color: 'gray', }} mt={0.5}> página x de xx</Typography>

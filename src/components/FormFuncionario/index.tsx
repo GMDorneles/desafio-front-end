@@ -2,22 +2,68 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { Box, Button, Container, Grid, Typography } from "@mui/material";
 import { DatePicker, Form, Input } from 'antd';
 import MaskedInput from 'antd-mask-input';
-import { Link } from "react-router-dom";
+import dayjs from 'dayjs';
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import Swal from 'sweetalert2';
+import { useAppDispatch } from "../../hooks/useTypeSelector";
+import { postFuncionarios, putFuncionarios } from '../../redux/funcionariosSlice';
+import { FuncionarioForm } from '../../redux/types';
 import { validarCpf } from '../../utils/validarCpf';
 
 export function FormFuncionario() {
 
-    const onFinish = (values: any) => {
-        if (validarCpf(values.cpf) == false) {
+    const { state } = useLocation();
+
+    let history = useNavigate();
+
+    const dispatch = useAppDispatch();
+
+    const onFinish = async (values: FuncionarioForm) => {
+
+        if (validarCpf(values.cpf) === false) {
             Swal.fire({
                 icon: 'error',
                 title: 'Erro',
                 text: 'CPF inválido!',
             })
-        }
+            return;
+        } else {
+            const dataConvertida = dayjs(values.data_nascimento).format('YYYY-MM-DD');
+            const dataCadastro = {
+                idfuncionarios: state?.data.idfuncionarios,
+                nome: values.nome,
+                email: values.email,
+                telefone: values.telefone,
+                data_nascimento: dataConvertida,
+                cpf: values.cpf,
+                funcao: values.funcao
+            }
+            if (state?.data) {
+                const res = await dispatch(putFuncionarios(dataCadastro));
 
-        console.log('Success:', values);
+                Swal.fire({
+                    icon: res.payload === "Funcionário atualizado com sucesso" ? 'success' : 'error',
+                    title: res.payload === "Funcionário atualizado com sucesso" ? 'Success' : 'Erro',
+                    text: res.payload === "Funcionário atualizado com sucesso" ? 'Editado com sucesso!' : 'Erro ao editar!',
+                })
+
+                if (res.payload === "Funcionário atualizado com sucesso") {
+                    history('/');
+                }
+
+            } else {
+                const res = await dispatch(postFuncionarios(dataCadastro));
+                Swal.fire({
+                    icon: res.payload === "Funcionário criado com sucesso" ? 'success' : 'error',
+                    title: res.payload === "Funcionário criado com sucesso" ? 'Success' : 'Erro',
+                    text: res.payload === "Funcionário criado com sucesso" ? 'Cadastrado com sucesso!' : 'Erro ao cadastrar!',
+                })
+
+                if (res.payload === "Funcionário criado com sucesso") {
+                    history('/');
+                }
+            }
+        }
     };
 
     return (
@@ -37,7 +83,11 @@ export function FormFuncionario() {
                                 <Typography sx={{ color: 'gray', fontSize: 15, }} mb={1}>Listagem</Typography>
                             </Link>
                             <ArrowForwardIosIcon sx={{ color: 'gray', fontSize: 16, marginTop: '3px' }} />
-                            <Typography sx={{ color: 'gray', fontSize: 15 }} mb={1}>Cadastro</Typography>
+                            {state?.data ?
+                                <Typography sx={{ color: 'gray', fontSize: 15 }} mb={1}>Edição</Typography>
+                                :
+                                <Typography sx={{ color: 'gray', fontSize: 15 }} mb={1}>Cadastro</Typography>
+                            }
                         </Box>
 
                         <Button type='submit' sx={{ bgcolor: 'rgb(75,78,252)', borderRadius: '10px', maxHeight: '80px' }}>
@@ -52,6 +102,7 @@ export function FormFuncionario() {
                             <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                                 <Typography variant="caption" sx={{ color: 'gray' }}>*Nome</Typography>
                                 <Form.Item
+                                    initialValue={state?.data?.nome}
                                     name="nome"
                                     rules={[{ required: true, message: 'Este campo é obrigatório!' }]}
                                 >
@@ -63,6 +114,7 @@ export function FormFuncionario() {
                             <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                                 <Typography variant="caption" sx={{ color: 'gray' }}>*CPF</Typography>
                                 <Form.Item
+                                    initialValue={state?.data?.cpf}
                                     name="cpf"
                                     rules={[{ required: true, message: 'Este campo é obrigatório!' }]}
                                 >
@@ -74,9 +126,10 @@ export function FormFuncionario() {
                             <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                                 <Typography variant="caption" sx={{ color: 'gray' }}>*Data de Nascimento</Typography>
                                 <Form.Item
-                                    name="dataNascimento"
+                                    name="data_nascimento"
                                     rules={[{ required: true, message: 'Este campo é obrigatório!' }]}>
                                     <DatePicker
+                                        defaultValue={state?.data && dayjs('01-01-2000', state.data.data_nascimento)}
                                         format="DD-MM-YYYY"
                                     />
                                 </Form.Item>
@@ -86,7 +139,8 @@ export function FormFuncionario() {
                             <Box sx={{ display: 'flex', flexDirection: 'column', }}>
                                 <Typography variant="caption" sx={{ color: 'gray' }}>*Email</Typography>
                                 <Form.Item
-                                    name="Email"
+                                    initialValue={state?.data?.email}
+                                    name="email"
                                     rules={[{ required: true, message: 'Este campo é obrigatório!' }, { message: 'Este campo Precisa de um email válido!', type: 'email' }]}
                                 >
                                     <Input />
@@ -97,7 +151,8 @@ export function FormFuncionario() {
                             <Box sx={{ display: 'flex', flexDirection: 'column', }}>
                                 <Typography variant="caption" sx={{ color: 'gray' }}>*Telefone</Typography>
                                 <Form.Item
-                                    name="Telefone"
+                                    initialValue={state?.data?.telefone}
+                                    name="telefone"
                                     rules={[{ required: true, message: 'Este campo é obrigatório!' }]}
                                 >
                                     <MaskedInput mask="(00)000000000" />
@@ -108,7 +163,8 @@ export function FormFuncionario() {
                             <Box sx={{ display: 'flex', flexDirection: 'column', }}>
                                 <Typography variant="caption" sx={{ color: 'gray' }}>*Função</Typography>
                                 <Form.Item
-                                    name="Funcao"
+                                    initialValue={state?.data?.funcao}
+                                    name="funcao"
                                     rules={[{ required: true, message: 'Este campo é obrigatório!' }]}
                                 >
                                     <Input />

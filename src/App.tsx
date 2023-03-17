@@ -1,7 +1,6 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { ListagemFuncionario } from "./components/ListagemFuncionario";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { FormFuncionario } from "./components/FormFuncionario";
-
+import { ListagemFuncionario } from "./components/ListagemFuncionario";
 function App() {
   return (
     <div className="App">
@@ -9,6 +8,7 @@ function App() {
         <Routes>
           <Route path="/" element={<ListagemFuncionario />} />
           <Route path="/from" element={<FormFuncionario />} />
+
         </Routes>
       </Router>
     </div>
