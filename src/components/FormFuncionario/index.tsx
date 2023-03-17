@@ -126,6 +126,7 @@ export function FormFuncionario() {
                             <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                                 <Typography variant="caption" sx={{ color: 'gray' }}>*Data de Nascimento</Typography>
                                 <Form.Item
+                                    initialValue={state?.data && dayjs('01-01-2000', state.data.data_nascimento)}
                                     name="data_nascimento"
                                     rules={[{ required: true, message: 'Este campo é obrigatório!' }]}>
                                     <DatePicker
