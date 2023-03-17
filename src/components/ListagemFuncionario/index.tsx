@@ -5,13 +5,15 @@ import EditIcon from '@mui/icons-material/Edit';
 import { Box, Container, Table, TableBody, TableCell, TableHead, TableRow, TextField, Typography } from "@mui/material";
 import Button from "@mui/material/Button";
 import CircularProgress from '@mui/material/CircularProgress';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from "react-router-dom";
 import Swal from 'sweetalert2';
 import { useAppDispatch, useAppSelector } from "../../hooks/useTypeSelector";
 import { deleteFuncionarios, getFuncionarios } from '../../redux/funcionariosSlice';
 
 export function ListagemFuncionario() {
+
+    const [search, setSearch] = useState<string>('');
 
     const dispatch = useAppDispatch();
 
@@ -49,6 +51,9 @@ export function ListagemFuncionario() {
         })
     }
 
+    const filterFuncionarios = search.length > 0 ? data.filter(funcionario => funcionario.nome.toUpperCase().includes(search.toUpperCase()))
+        : data;
+
     useEffect(() => {
         dispatch(getFuncionarios());
     }, [dispatch]);
@@ -72,7 +77,7 @@ export function ListagemFuncionario() {
                 </Box>
 
                 <Box mt={4}>
-                    <TextField sx={{ width: '100%', }} id="outlined-basic" label="Pesquisar funcionário" variant="outlined" size="small" />
+                    <TextField sx={{ width: '100%', }} id="outlined-basic" label="Pesquisar funcionário" variant="outlined" size="small" onChange={(e) => setSearch(e.target.value)} />
                 </Box>
 
                 <Box mt={3}>
@@ -94,7 +99,7 @@ export function ListagemFuncionario() {
                             </TableHead>
                             <TableBody>
                                 {
-                                    data.map((funcionario, i) => (
+                                    filterFuncionarios.map((funcionario, i) => (
                                         <TableRow key={i}>
                                             <TableCell sx={{ fontSize: 16 }} align="left">
                                                 {funcionario.nome}

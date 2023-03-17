@@ -17,6 +17,11 @@ export interface FuncionarioForm {
   funcao: string;
 }
 
+export interface TabaelaProps {
+  data: Funcionario[];
+  deletar: (id: number) => void;
+}
+
 /**
  * State Type
  */
