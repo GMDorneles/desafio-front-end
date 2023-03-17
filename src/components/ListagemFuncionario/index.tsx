@@ -1,8 +1,6 @@
-import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
-import { Box, Container, Table, TableBody, TableCell, TableHead, TableRow, TextField, Typography } from "@mui/material";
+import { Box, Container, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from "@mui/material";
 import Button from "@mui/material/Button";
 import CircularProgress from '@mui/material/CircularProgress';
 import { useEffect, useState } from 'react';
@@ -51,6 +49,7 @@ export function ListagemFuncionario() {
         })
     }
 
+
     const filterFuncionarios = search.length > 0 ? data.filter(funcionario => funcionario.nome.toUpperCase().includes(search.toUpperCase()))
         : data;
 
@@ -83,58 +82,56 @@ export function ListagemFuncionario() {
                 <Box mt={3}>
                     {loading ? (
                         <CircularProgress />
-                    ) : (
-                        <Table>
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell sx={{ fontWeight: 'bold', fontSize: 14, color: 'gray', }} align="left" >
-                                        Nome
-                                    </TableCell>
-                                    <TableCell sx={{ fontWeight: 'bold', fontSize: 14, color: 'gray', }} align="left" >
-                                        Função
-                                    </TableCell>
-                                    <TableCell>
-                                    </TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {
-                                    filterFuncionarios.map((funcionario, i) => (
-                                        <TableRow key={i}>
-                                            <TableCell sx={{ fontSize: 16 }} align="left">
-                                                {funcionario.nome}
-                                            </TableCell>
-                                            <TableCell sx={{ fontSize: 16 }} align="left">
-                                                {funcionario.funcao}
-                                            </TableCell>
-                                            <TableCell align={'right'}>
-                                                <Link to="from" state={{
-                                                    data: funcionario
-                                                }} >
-                                                    <Button >
-                                                        <EditIcon sx={{ color: 'black', fontSize: 20 }} />
+                    ) : (<div>
+                        <TableContainer sx={{
+                            maxHeight: '300px',
+                            overflow: "hidden",
+                            overflowY: "scroll",
+                        }}>
+                            <Table>
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell sx={{ fontWeight: 'bold', fontSize: 14, color: 'gray', }} align="left" >
+                                            Nome
+                                        </TableCell>
+                                        <TableCell sx={{ fontWeight: 'bold', fontSize: 14, color: 'gray', }} align="left" >
+                                            Função
+                                        </TableCell>
+                                        <TableCell>
+                                        </TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {
+                                        filterFuncionarios.map((funcionario, i) => (
+                                            <TableRow key={i}>
+                                                <TableCell sx={{ fontSize: 16 }} align="left">
+                                                    {funcionario.nome}
+                                                </TableCell>
+                                                <TableCell sx={{ fontSize: 16 }} align="left">
+                                                    {funcionario.funcao}
+                                                </TableCell>
+                                                <TableCell align={'right'}>
+                                                    <Link to="from" state={{
+                                                        data: funcionario
+                                                    }} >
+                                                        <Button >
+                                                            <EditIcon sx={{ color: 'black', fontSize: 20 }} />
+                                                        </Button>
+                                                    </Link>
+                                                    <Button onClick={() => deleteFuncionario(funcionario.idfuncionarios)}>
+                                                        <DeleteIcon sx={{ color: 'black', fontSize: 20 }} />
                                                     </Button>
-                                                </Link>
-                                                <Button onClick={() => deleteFuncionario(funcionario.idfuncionarios)}>
-                                                    <DeleteIcon sx={{ color: 'black', fontSize: 20 }} />
-                                                </Button>
-                                            </TableCell>
-                                        </TableRow>
-                                    ))
-                                }
-                            </TableBody>
-                        </Table>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))
+                                    }
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                    </div>
                     )}
 
-                </Box>
-                <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignContent: 'center' }} mt={1}>
-                    <Typography sx={{ fontWeight: 'normal', fontSize: 14, color: 'gray', }} mt={0.5}> página x de xx</Typography>
-                    <Button>
-                        <ArrowBackIosNewIcon sx={{ color: 'gray', fontSize: 16 }} />
-                    </Button>
-                    <Button>
-                        <ArrowForwardIosIcon sx={{ color: 'gray', fontSize: 16 }} />
-                    </Button>
                 </Box>
             </Box>
         </Container >
